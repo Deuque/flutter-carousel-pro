@@ -16,6 +16,9 @@ class Carousel extends StatefulWidget {
   //All the images on this Carousel.
   final List images;
 
+  //initial page position
+  final int initialPosition;
+
   //All the images on this Carousel.
   final defaultImage;
 
@@ -96,6 +99,7 @@ class Carousel extends StatefulWidget {
 
   Carousel({
     this.images,
+    this.initialPosition = 0,
     this.animationCurve = Curves.ease,
     this.animationDuration = const Duration(milliseconds: 300),
     this.dotSize = 8.0,
@@ -130,13 +134,14 @@ class Carousel extends StatefulWidget {
 
 class CarouselState extends State<Carousel> {
   Timer timer;
-  int _currentImageIndex = 0;
-  PageController _controller = PageController();
+  int _currentImageIndex;
+  PageController _controller;
 
   @override
   void initState() {
     super.initState();
-
+    _currentImageIndex = widget.initialPosition;
+    _controller = PageController(initialPage: _currentImageIndex);
     if (widget.images != null && widget.images.isNotEmpty) {
       if (widget.autoplay) {
         timer = Timer.periodic(widget.autoplayDuration, (_) {
@@ -170,114 +175,114 @@ class CarouselState extends State<Carousel> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> listImages = (widget.images != null &&
-            widget.images.isNotEmpty)
+        widget.images.isNotEmpty)
         ? widget.images.map<Widget>(
-            (netImage) {
-              if (netImage is ImageProvider) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: widget.borderRadius
-                        ? BorderRadius.all(widget.radius != null
-                            ? widget.radius
-                            : Radius.circular(8.0))
-                        : null,
-                    image: DecorationImage(
-                      //colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                      image: netImage,
-                      fit: widget.boxFit,
-                    ),
-                  ),
-                  child: widget.overlayShadow
-                      ? Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.center,
-                              stops: [0.0, widget.overlayShadowSize],
-                              colors: [
-                                widget.overlayShadowColors != null
-                                    ? widget.overlayShadowColors
-                                        .withOpacity(1.0)
-                                    : Colors.grey[800].withOpacity(1.0),
-                                widget.overlayShadowColors != null
-                                    ? widget.overlayShadowColors
-                                        .withOpacity(0.0)
-                                    : Colors.grey[800].withOpacity(0.0)
-                              ],
-                            ),
-                          ),
-                        )
-                      : Container(),
-                );
-              } else if (netImage is FadeInImage) {
-                return ClipRRect(
-                  borderRadius: widget.borderRadius
-                      ? BorderRadius.all(widget.radius != null
-                          ? widget.radius
-                          : Radius.circular(8.0))
-                      : null,
-                  child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.center,
-                          stops: [0.0, widget.overlayShadowSize],
-                          colors: [
-                            widget.overlayShadowColors != null
-                                ? widget.overlayShadowColors.withOpacity(1.0)
-                                : Colors.grey[800].withOpacity(1.0),
-                            widget.overlayShadowColors != null
-                                ? widget.overlayShadowColors.withOpacity(0.0)
-                                : Colors.grey[800].withOpacity(0.0)
-                          ],
-                        ),
-                      ),
-                      child: netImage),
-                );
-              } else {
-                return netImage;
-              }
-            },
-          ).toList()
-        : [
-            widget.defaultImage is ImageProvider
+          (netImage) {
+        if (netImage is ImageProvider) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: widget.borderRadius
+                  ? BorderRadius.all(widget.radius != null
+                  ? widget.radius
+                  : Radius.circular(8.0))
+                  : null,
+              image: DecorationImage(
+                //colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+                image: netImage,
+                fit: widget.boxFit,
+              ),
+            ),
+            child: widget.overlayShadow
                 ? Container(
-                    decoration: BoxDecoration(
-                      borderRadius: widget.borderRadius
-                          ? BorderRadius.all(widget.radius != null
-                              ? widget.radius
-                              : Radius.circular(8.0))
-                          : null,
-                      image: DecorationImage(
-                        //colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
-                        image: widget.defaultImage,
-                        fit: widget.boxFit,
-                      ),
-                    ),
-                    child: widget.overlayShadow
-                        ? Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.center,
-                                stops: [0.0, widget.overlayShadowSize],
-                                colors: [
-                                  widget.overlayShadowColors != null
-                                      ? widget.overlayShadowColors
-                                          .withOpacity(1.0)
-                                      : Colors.grey[800].withOpacity(1.0),
-                                  widget.overlayShadowColors != null
-                                      ? widget.overlayShadowColors
-                                          .withOpacity(0.0)
-                                      : Colors.grey[800].withOpacity(0.0)
-                                ],
-                              ),
-                            ),
-                          )
-                        : Container(),
-                  )
-                : widget.defaultImage,
-          ];
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.center,
+                  stops: [0.0, widget.overlayShadowSize],
+                  colors: [
+                    widget.overlayShadowColors != null
+                        ? widget.overlayShadowColors
+                        .withOpacity(1.0)
+                        : Colors.grey[800].withOpacity(1.0),
+                    widget.overlayShadowColors != null
+                        ? widget.overlayShadowColors
+                        .withOpacity(0.0)
+                        : Colors.grey[800].withOpacity(0.0)
+                  ],
+                ),
+              ),
+            )
+                : Container(),
+          );
+        } else if (netImage is FadeInImage) {
+          return ClipRRect(
+            borderRadius: widget.borderRadius
+                ? BorderRadius.all(widget.radius != null
+                ? widget.radius
+                : Radius.circular(8.0))
+                : null,
+            child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.center,
+                    stops: [0.0, widget.overlayShadowSize],
+                    colors: [
+                      widget.overlayShadowColors != null
+                          ? widget.overlayShadowColors.withOpacity(1.0)
+                          : Colors.grey[800].withOpacity(1.0),
+                      widget.overlayShadowColors != null
+                          ? widget.overlayShadowColors.withOpacity(0.0)
+                          : Colors.grey[800].withOpacity(0.0)
+                    ],
+                  ),
+                ),
+                child: netImage),
+          );
+        } else {
+          return netImage;
+        }
+      },
+    ).toList()
+        : [
+      widget.defaultImage is ImageProvider
+          ? Container(
+        decoration: BoxDecoration(
+          borderRadius: widget.borderRadius
+              ? BorderRadius.all(widget.radius != null
+              ? widget.radius
+              : Radius.circular(8.0))
+              : null,
+          image: DecorationImage(
+            //colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.2), BlendMode.dstATop),
+            image: widget.defaultImage,
+            fit: widget.boxFit,
+          ),
+        ),
+        child: widget.overlayShadow
+            ? Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.center,
+              stops: [0.0, widget.overlayShadowSize],
+              colors: [
+                widget.overlayShadowColors != null
+                    ? widget.overlayShadowColors
+                    .withOpacity(1.0)
+                    : Colors.grey[800].withOpacity(1.0),
+                widget.overlayShadowColors != null
+                    ? widget.overlayShadowColors
+                    .withOpacity(0.0)
+                    : Colors.grey[800].withOpacity(0.0)
+              ],
+            ),
+          ),
+        )
+            : Container(),
+      )
+          : widget.defaultImage,
+    ];
 
     final bottom = [
       DotPosition.bottomLeft,
@@ -294,11 +299,11 @@ class CarouselState extends State<Carousel> {
         ? widget.dotVerticalPadding
         : null;
     double left = [DotPosition.topLeft, DotPosition.bottomLeft]
-            .contains(widget.dotPosition)
+        .contains(widget.dotPosition)
         ? widget.dotHorizontalPadding
         : null;
     double right = [DotPosition.topRight, DotPosition.bottomRight]
-            .contains(widget.dotPosition)
+        .contains(widget.dotPosition)
         ? widget.dotHorizontalPadding
         : null;
 
@@ -337,48 +342,48 @@ class CarouselState extends State<Carousel> {
         ),
         widget.showIndicator
             ? Positioned(
-                bottom: bottom,
-                top: top,
-                left: left,
-                right: right,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: widget.dotBgColor == null
-                        ? Colors.grey[800].withOpacity(0.5)
-                        : widget.dotBgColor,
-                    borderRadius: widget.borderRadius
-                        ? (widget.noRadiusForIndicator
-                            ? null
-                            : BorderRadius.only(
-                                bottomLeft: widget.radius != null
-                                    ? widget.radius
-                                    : Radius.circular(8.0),
-                                bottomRight: widget.radius != null
-                                    ? widget.radius
-                                    : Radius.circular(8.0)))
-                        : null,
-                  ),
-                  padding: EdgeInsets.all(widget.indicatorBgPadding),
-                  child: Center(
-                    child: DotsIndicator(
-                      controller: _controller,
-                      itemCount: listImages.length,
-                      color: widget.dotColor,
-                      increasedColor: widget.dotIncreasedColor,
-                      dotSize: widget.dotSize,
-                      dotSpacing: widget.dotSpacing,
-                      dotIncreaseSize: widget.dotIncreaseSize,
-                      onPageSelected: (int page) {
-                        _controller.animateToPage(
-                          page,
-                          duration: widget.animationDuration,
-                          curve: widget.animationCurve,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              )
+          bottom: bottom,
+          top: top,
+          left: left,
+          right: right,
+          child: Container(
+            decoration: BoxDecoration(
+              color: widget.dotBgColor == null
+                  ? Colors.grey[800].withOpacity(0.5)
+                  : widget.dotBgColor,
+              borderRadius: widget.borderRadius
+                  ? (widget.noRadiusForIndicator
+                  ? null
+                  : BorderRadius.only(
+                  bottomLeft: widget.radius != null
+                      ? widget.radius
+                      : Radius.circular(8.0),
+                  bottomRight: widget.radius != null
+                      ? widget.radius
+                      : Radius.circular(8.0)))
+                  : null,
+            ),
+            padding: EdgeInsets.all(widget.indicatorBgPadding),
+            child: Center(
+              child: DotsIndicator(
+                controller: _controller,
+                itemCount: listImages.length,
+                color: widget.dotColor,
+                increasedColor: widget.dotIncreasedColor,
+                dotSize: widget.dotSize,
+                dotSpacing: widget.dotSpacing,
+                dotIncreaseSize: widget.dotIncreaseSize,
+                onPageSelected: (int page) {
+                  _controller.animateToPage(
+                    page,
+                    duration: widget.animationDuration,
+                    curve: widget.animationCurve,
+                  );
+                },
+              ),
+            ),
+          ),
+        )
             : Container(),
       ],
     );
@@ -389,13 +394,13 @@ class CarouselState extends State<Carousel> {
 class DotsIndicator extends AnimatedWidget {
   DotsIndicator(
       {this.controller,
-      this.itemCount,
-      this.onPageSelected,
-      this.color,
-      this.increasedColor,
-      this.dotSize,
-      this.dotIncreaseSize,
-      this.dotSpacing})
+        this.itemCount,
+        this.onPageSelected,
+        this.color,
+        this.increasedColor,
+        this.dotSize,
+        this.dotIncreaseSize,
+        this.dotSpacing})
       : super(listenable: controller);
 
   // The PageController that this DotsIndicator is representing.
@@ -450,8 +455,9 @@ class DotsIndicator extends AnimatedWidget {
   }
 
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      runSpacing: 5,
       children: List<Widget>.generate(itemCount, _buildDot),
     );
   }
